@@ -305,11 +305,13 @@ class BoolNode extends TypeNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
+        p.print("bool");
     }
 }
 
 class VoidNode extends TypeNode {
     public VoidNode() {
+        p.print("void");
     }
 
     public void unparse(PrintWriter p, int indent) {
