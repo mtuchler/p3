@@ -77,7 +77,15 @@ non terminal ProgramNode      program;
 non terminal LinkedList       declList;
 non terminal DeclNode         decl;
 non terminal VarDeclNode      varDecl;
+non terminal FnDeclNode       fnDecl;
+non terminal FormalDeclNode   formalDecl;
+non terminal FormalsListNode  formalsList;
+non terminal FnBodyNode       fnBody;
+non terminal StmtListNode     stmtList;
 non terminal TypeNode         type;
+non terminal StmtNode         stmt;
+non terminal AssignStmtNode   assignStmt;
+non terminal ExpNode          exp;
 non terminal IdNode           id;
  
  
@@ -108,10 +116,49 @@ declList        ::= declList:dl decl:d
 decl            ::= varDecl:v
                 {: RESULT = v;
                 :}
+                | fnDecl:f
+                {: RESULT = f;
+                :}
                 ;
 
 varDecl         ::= type:t id:i SEMICOLON
                 {: RESULT = new VarDeclNode(t, i, VarDeclNode.NOT_STRUCT);
+                :}
+                ;
+
+fnDecl          ::= type:t id:i LPAREN formalsList:f RPAREN LCURLY fnBody:b RCURLY
+                {: FormalsListNode fl = new FormalsListNode(f);
+                   RESULT = new FnDeclNode(t, i, fl, b);
+                :}
+                ;
+
+formalDecl      ::= type:t id:i
+                {: RESULT = new FormalDeclNode(t, i);
+                :}
+                ;
+
+formalsList     ::= formalsList:fl formalDecl:fd
+                {: fl.addLast(fd);
+                   RESULT = fl;
+                :}
+                | /* epsilon */
+                {: RESULT = new LinkedList<FormalDeclNode>();
+                :}
+                ;
+
+fnBody          ::= declList:dl stmtList:sl
+                {: DeclListNode dln = new DeclListNode(dl);
+                   StmtListNode sln = new StmtListNode(sl);
+                   RESULT = new FnBodyNode(dln, sln);
+                :}
+                ;
+
+stmtList        ::= stmtList:sl stmt:s
+                {: sl.addLast(s);
+                   RESULT = sl;
+                :}
+                | /* epsilon */
+                {: RESULT = new LinkedList<StmtNode>();
                 :}
                 ;
 
@@ -125,6 +172,22 @@ type            ::= INT
                 |
                 VOID
                 {: RESULT = new VoidNode();
+                :}
+                ;
+
+stmt            ::= assignStmt:as
+                {: RESULT = as;
+                :}
+                ;
+
+assignStmt      ::= exp:lhs ASSIGN exp:e SEMICOLON
+                {: AssignNode a = new AssignNode(lhs, e);
+                   RESULT = new AssignStmtNode(a);
+                :}
+                ;
+
+exp             ::= id:i
+                {: RESULT = i;
                 :}
                 ;
 
