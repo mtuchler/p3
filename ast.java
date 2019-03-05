@@ -82,7 +82,7 @@ import java.util.*;
 // whether they are leaves, internal nodes with linked lists of kids, or
 // internal nodes with a fixed number of kids:
 //
-// (1) Leaf nodes:
+// (1) Leaf nodes:ssignStmtNode   
 //        IntNode,   BoolNode,  VoidNode,  IntLitNode,  StrLitNode,
 //        TrueNode,  FalseNode, IdNode
 //
@@ -112,7 +112,7 @@ abstract class ASTnode {
 
     // this method can be used by the unparse methods to add indents
     protected void addIndent(PrintWriter p, int indent) {
-        for (int k=0; k<indent; k++) p.print(" ");
+        for (int k=0; k<indent; k++) p.print("    ");
     }
 }
 
@@ -165,6 +165,9 @@ class FormalsListNode extends ASTnode {
         try {
             while (it.hasNext()) {
                 ((FormalDeclNode)it.next()).unparse(p, indent);
+                if (it.hasNext()){
+                    p.print(", ");
+                }
             }
         } catch (NoSuchElementException ex) {
             System.err.println("unexpected NoSuchElementException in FormalDeclListNode.print");
@@ -183,9 +186,9 @@ class FnBodyNode extends ASTnode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-        addIndent(p, indent);
-        myDeclList.unparse(p, 0);
-        myStmtList.unparse(p, 0);
+        // addIndent(p, indent);
+        myDeclList.unparse(p, indent);
+        myStmtList.unparse(p, indent);
     }
 
     // 2 kids
@@ -242,9 +245,9 @@ class VarDeclNode extends DeclNode {
 
     public void unparse(PrintWriter p, int indent) {
         addIndent(p, indent);
-        myType.unparse(p, 0);
+        myType.unparse(p, indent);
         p.print(" ");
-        myId.unparse(p, 0);
+        myId.unparse(p, indent);
         p.println(";");
     }
 
@@ -269,13 +272,13 @@ class FnDeclNode extends DeclNode {
 
     public void unparse(PrintWriter p, int indent) {
         addIndent(p, indent);
-        myType.unparse(p, 0);
+        myType.unparse(p, indent);
         p.print(" ");
-        myId.unparse(p, 0);
+        myId.unparse(p, indent);
         p.print("(");
-        myFormalsList.unparse(p, 0);
+        myFormalsList.unparse(p, indent);
         p.print(") {\n");
-        myBody.unparse(p, 1);
+        myBody.unparse(p, indent+1);
         p.print("}");
     }
 
@@ -294,9 +297,9 @@ class FormalDeclNode extends DeclNode {
 
     public void unparse(PrintWriter p, int indent) {
         addIndent(p, indent);
-        myType.unparse(p, 0);
+        myType.unparse(p, indent);
         p.print(" ");
-        myId.unparse(p, 0);
+        myId.unparse(p, indent);
     }
 
     // 2 kids
@@ -311,6 +314,12 @@ class StructDeclNode extends DeclNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
+        addIndent(p, indent);
+        p.print("struct ");
+        myId.unparse(p, indent);
+        p.print(" {\n");
+        myDeclList.unparse(p, indent+1);
+        p.print("}");
     }
 
     // 2 kids
@@ -358,6 +367,8 @@ class StructNode extends TypeNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
+        p.print("struct ");
+        myId.unparse(p, indent);
     }
 	
 	// 1 kid
@@ -377,8 +388,8 @@ class AssignStmtNode extends StmtNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-        myAssign.unparse(p, 0);
-
+        addIndent(p, indent);
+        myAssign.unparse(p, indent);
     }
 
     // 1 kid
@@ -627,10 +638,10 @@ class AssignNode extends ExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-        myLhs.unparse(p, 0);
+        myLhs.unparse(p, indent);
         p.print(" = ");
-        myExp.unparse(p, 0);
-        p.print(":\n");
+        myExp.unparse(p, indent);
+        p.print(";\n");
     }
 
     // 2 kids

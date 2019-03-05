@@ -36,7 +36,7 @@ terminal                COUT;
 terminal                IF;
 terminal                ELSE;
 terminal                WHILE;
-terminal		REPEAT;
+terminal		        REPEAT;
 terminal                RETURN;
 terminal IdTokenVal     ID;
 terminal IntLitTokenVal INTLITERAL;
@@ -79,13 +79,15 @@ non terminal DeclNode         decl;
 non terminal VarDeclNode      varDecl;
 non terminal FnDeclNode       fnDecl;
 non terminal FormalDeclNode   formalDecl;
-non terminal FormalsListNode  formalsList;
+non terminal StructDeclNode   structDecl;
+non terminal LinkedList       formalsList;
 non terminal FnBodyNode       fnBody;
-non terminal StmtListNode     stmtList;
+non terminal LinkedList       stmtList;
 non terminal TypeNode         type;
 non terminal StmtNode         stmt;
 non terminal AssignStmtNode   assignStmt;
 non terminal ExpNode          exp;
+non terminal IntLitNode       intlit;
 non terminal IdNode           id;
  
  
@@ -119,6 +121,9 @@ decl            ::= varDecl:v
                 | fnDecl:f
                 {: RESULT = f;
                 :}
+                | structDecl:s
+                {: RESULT = s;
+                :}
                 ;
 
 varDecl         ::= type:t id:i SEMICOLON
@@ -134,6 +139,16 @@ fnDecl          ::= type:t id:i LPAREN formalsList:f RPAREN LCURLY fnBody:b RCUR
 
 formalDecl      ::= type:t id:i
                 {: RESULT = new FormalDeclNode(t, i);
+                :}
+                | type:t id:i COMMA
+                {: RESULT = new FormalDeclNode(t, i);
+                :}
+                ;
+
+structDecl      ::= type:t id:i LCURLY declList:dl RCURLY
+                {: 
+                   DeclListNode dln = new DeclListNode(dl);
+                   RESULT = new StructDeclNode(i, dln);
                 :}
                 ;
 
@@ -173,6 +188,10 @@ type            ::= INT
                 VOID
                 {: RESULT = new VoidNode();
                 :}
+                |
+                STRUCT
+                {: 
+                :}
                 ;
 
 stmt            ::= assignStmt:as
@@ -188,6 +207,14 @@ assignStmt      ::= exp:lhs ASSIGN exp:e SEMICOLON
 
 exp             ::= id:i
                 {: RESULT = i;
+                :}
+                | intlit:i
+                {: RESULT = i;
+                :}
+                ;
+
+intlit          ::= INTLITERAL:i
+                {: RESULT = new IntLitNode(i.linenum, i.charnum, i.intVal);
                 :}
                 ;
 

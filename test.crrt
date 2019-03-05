@@ -1,4 +1,2 @@
-int x;
-int y;
-void v;
-bool b;
+int i;
+i = 34;
