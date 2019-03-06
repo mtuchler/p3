@@ -1,2 +1,16 @@
-int i;
-i = 34;
+struct stupid {
+	int a;
+	int b;
+	int c;
+}
+void f(int x) {
+	int y;
+	if (5) {
+		y = x;
+	}
+	else {
+	} 	
+}
+int f(int y) {
+	f(y);
+}

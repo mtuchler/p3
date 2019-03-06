@@ -83,12 +83,25 @@ non terminal StructDeclNode   structDecl;
 non terminal LinkedList       formalsList;
 non terminal FnBodyNode       fnBody;
 non terminal LinkedList       stmtList;
+non terminal LinkedList       expList;
 non terminal TypeNode         type;
+non terminal StructNode       struct;
 non terminal StmtNode         stmt;
 non terminal AssignStmtNode   assignStmt;
+non terminal PostIncStmtNode  postIncStmt;
+non terminal PostDecStmtNode  postDecStmt;
+non terminal ReadStmtNode     readStmt;
+non terminal WriteStmtNode    writeStmt;
+non terminal IfStmtNode       ifStmt;
+non terminal IfElseStmtNode   ifElseStmt;
+non terminal WhileStmtNode    whileStmt;
+non terminal RepeatStmtNode   repeatStmt;
+non terminal CallStmtNode     callStmt;
+non terminal ReturnStmtNode   returnStmt;
 non terminal ExpNode          exp;
 non terminal IntLitNode       intlit;
 non terminal IdNode           id;
+non terminal CallExpNode      callExp;
  
  
 /* NOTE: Add precedence and associativity declarations here */
@@ -145,7 +158,7 @@ formalDecl      ::= type:t id:i
                 :}
                 ;
 
-structDecl      ::= type:t id:i LCURLY declList:dl RCURLY
+structDecl      ::= STRUCT id:i LCURLY declList:dl RCURLY
                 {: 
                    DeclListNode dln = new DeclListNode(dl);
                    RESULT = new StructDeclNode(i, dln);
@@ -177,25 +190,63 @@ stmtList        ::= stmtList:sl stmt:s
                 :}
                 ;
 
+expList         ::= expList:el exp:e
+                {: el.addLast(e);
+                   RESULT = el;
+                :}
+                | /* epsilon */
+                {: RESULT = new LinkedList<ExpNode>();
+                :}
+                ;
+
 type            ::= INT
                 {: RESULT = new IntNode();
                 :}
-                |
-                BOOL
+                | BOOL
                 {: RESULT = new BoolNode();
                 :}
-                |
-                VOID
+                | VOID
                 {: RESULT = new VoidNode();
                 :}
-                |
-                STRUCT
-                {: 
+                ;
+
+struct          ::= STRUCT id:i
+                {: RESULT = new StructNode(i);
                 :}
                 ;
 
 stmt            ::= assignStmt:as
                 {: RESULT = as;
+                :}
+                | postIncStmt:p
+                {: RESULT = p;
+                :}
+                | postDecStmt:p
+                {: RESULT = p;
+                :}
+                | readStmt:r
+                {: RESULT = r;
+                :}
+                | writeStmt:w
+                {: RESULT = w;
+                :}
+                | ifStmt:i
+                {: RESULT = i;
+                :}
+                | ifElseStmt:i
+                {: RESULT = i;
+                :}
+                | whileStmt:w
+                {: RESULT = w;
+                :}
+                | repeatStmt:r
+                {: RESULT = r;
+                :}
+                | callStmt:c
+                {: RESULT = c;
+                :}
+                | returnStmt:r
+                {: RESULT = r;
                 :}
                 ;
 
@@ -205,11 +256,78 @@ assignStmt      ::= exp:lhs ASSIGN exp:e SEMICOLON
                 :}
                 ;
 
+postIncStmt      ::= exp:e PLUSPLUS SEMICOLON
+                {: RESULT = new PostIncStmtNode(e);
+                :}
+                ;
+
+postDecStmt      ::= exp:e MINUSMINUS SEMICOLON
+                {: RESULT = new PostDecStmtNode(e);
+                :}
+                ;
+
+readStmt      ::= CIN READ exp:e SEMICOLON
+                {: RESULT = new ReadStmtNode(e);
+                :}
+                ;
+
+writeStmt      ::= COUT WRITE exp:e SEMICOLON
+                {: RESULT = new WriteStmtNode(e);
+                :}
+                ;
+
+ifStmt          ::= IF LPAREN exp:e RPAREN LCURLY declList:dl stmtList:sl RCURLY
+                {: DeclListNode dln = new DeclListNode(dl);
+                   StmtListNode sln = new StmtListNode(sl);
+                   RESULT = new IfStmtNode(e, dln, sln);
+                :}
+                ;
+
+ifElseStmt      ::= IF LPAREN exp:e RPAREN LCURLY declList:dl1 stmtList:sl1 RCURLY
+                    ELSE LCURLY declList:dl2 stmtList:sl2 RCURLY
+                {: DeclListNode dln1 = new DeclListNode(dl1);
+                   StmtListNode sln1 = new StmtListNode(sl1);
+                   DeclListNode dln2 = new DeclListNode(dl2);
+                   StmtListNode sln2 = new StmtListNode(sl2);
+                   RESULT = new IfElseStmtNode(e, dln1, sln1, dln2, sln2);
+                :}
+                ;
+
+whileStmt       ::= WHILE LPAREN exp:e RPAREN LCURLY declList:dl stmtList:sl RCURLY
+                {: DeclListNode dln = new DeclListNode(dl);
+                   StmtListNode sln = new StmtListNode(sl);
+                   RESULT = new WhileStmtNode(e, dln, sln);
+                :}
+                ;
+
+repeatStmt      ::= REPEAT LPAREN exp:e RPAREN LCURLY declList:dl stmtList:sl RCURLY
+                {: DeclListNode dln = new DeclListNode(dl);
+                   StmtListNode sln = new StmtListNode(sl);
+                   RESULT = new RepeatStmtNode(e, dln, sln);
+                :}
+                ;
+
+callStmt        ::= callExp:c SEMICOLON
+                {: RESULT = new CallStmtNode(c);
+                :}
+                ;
+
+returnStmt      ::= RETURN SEMICOLON
+                {: RESULT = new ReturnStmtNode(null);
+                :}
+                | RETURN exp:e SEMICOLON
+                {: RESULT = new ReturnStmtNode(e);
+                :}
+                ;
+
 exp             ::= id:i
                 {: RESULT = i;
                 :}
                 | intlit:i
                 {: RESULT = i;
+                :}
+                | callExp:c
+                {: RESULT = c;
                 :}
                 ;
 
@@ -223,3 +341,8 @@ id              ::= ID:i
                 :}
                 ;
 				
+callExp         ::= id:i LPAREN expList:e RPAREN
+                {: ExpListNode eln = new ExpListNode(e);
+                   RESULT = new CallExpNode(i, eln);
+                :}
+                ;
