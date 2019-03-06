@@ -545,6 +545,7 @@ class WhileStmtNode extends StmtNode {
         p.print(") {\n");
         myDeclList.unparse(p, indent+1);
         myStmtList.unparse(p, indent+1);
+        addIndent(p, indent);
         p.print("}");
     }
 
@@ -568,6 +569,7 @@ class RepeatStmtNode extends StmtNode {
         p.print(") {\n");
         myDeclList.unparse(p, indent+1);
         myStmtList.unparse(p, indent+1);
+        addIndent(p, indent);
         p.print("}");
     }
 

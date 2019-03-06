@@ -20,6 +20,8 @@ void f(int x, int y, int z) {
 	a = 2 * 6 / 1;
 	b = 1;
 
+	simple.x = 5;
+	simple.y = 6;
 	if (a){
 		a = 5;
 	}
@@ -57,7 +59,7 @@ void f(int x, int y, int z) {
 
 	}
 
-	f2(b);
+	x = f2(b);
 }
 
 
