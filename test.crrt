@@ -62,5 +62,8 @@ void f(int x, int y, int z) {
 	x = f2(b);
 }
 
-
-
+void readWrite(){
+	int n;
+	cin >> n;
+	cout << "some output here";
+}

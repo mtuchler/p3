@@ -448,7 +448,7 @@ class ReadStmtNode extends StmtNode {
         addIndent(p, indent);
         p.print("cin >> ");
         myExp.unparse(p, indent);
-        p.print(";\n");
+        p.print(";");
     }
 
     // 1 kid (actually can only be an IdNode or an ArrayExpNode)
@@ -464,7 +464,7 @@ class WriteStmtNode extends StmtNode {
         addIndent(p, indent);
         p.print("cout << ");
         myExp.unparse(p, indent);
-        p.print(";\n");
+        p.print(";");
     }
 
     // 1 kid
