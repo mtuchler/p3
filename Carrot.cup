@@ -100,8 +100,29 @@ non terminal CallStmtNode     callStmt;
 non terminal ReturnStmtNode   returnStmt;
 non terminal ExpNode          exp;
 non terminal IntLitNode       intlit;
+non terminal StringLitNode    strlit;
+non terminal TrueNode         true;
+non terminal FalseNode        false;
 non terminal IdNode           id;
+non terminal DotAccessExpNode dotAccess;
+non terminal AssignNode       assign;
 non terminal CallExpNode      callExp;
+non terminal UnaryExpNode     unaryExp;
+non terminal BinaryExpNode    binaryExp;
+non terminal UnaryMinusNode   unaryMinus;
+non terminal NotNode          not;
+non terminal PlusNode         plus;
+non terminal MinusNode        minus;
+non terminal TimesNode        times;
+non terminal DivideNode       divide;
+non terminal AndNode          and;
+non terminal OrNode           or;
+non terminal EqualsNode       equals;
+non terminal NotEqualsNode    notequals;
+non terminal LessNode         less;
+non terminal GreaterNode      greater;
+non terminal LessEqNode       lesseq;
+non terminal GreaterEqNode    greatereq;
  
  
 /* NOTE: Add precedence and associativity declarations here */
@@ -250,9 +271,8 @@ stmt            ::= assignStmt:as
                 :}
                 ;
 
-assignStmt      ::= exp:lhs ASSIGN exp:e SEMICOLON
-                {: AssignNode a = new AssignNode(lhs, e);
-                   RESULT = new AssignStmtNode(a);
+assignStmt      ::= assign:a SEMICOLON
+                {: RESULT = new AssignStmtNode(a);
                 :}
                 ;
 
@@ -326,8 +346,29 @@ exp             ::= id:i
                 | intlit:i
                 {: RESULT = i;
                 :}
+                | strlit:s
+                {: RESULT = s;
+                :}
+                | true:t
+                {: RESULT = t;
+                :}
+                | false:f
+                {: RESULT = f;
+                :}
+                | dotAccess:d
+                {: RESULT = d
+                :}
+                | assign:a
+                {: RESULT = a;
+                :}
                 | callExp:c
                 {: RESULT = c;
+                :}
+                | unaryExp:u
+                {: RESULT = u;
+                :}
+                | binaryExp:b
+                {: RESULT = b;
                 :}
                 ;
 
@@ -336,13 +377,154 @@ intlit          ::= INTLITERAL:i
                 :}
                 ;
 
+strlit          ::= STRINGLITERAL:s
+                {: RESULT = new StringLitNode(s.linenum, s.charnum, s.strVal)
+                :}
+                ;
+
+true            ::= TRUE:t
+                {: RESULT = new TrueNode(t.linenum, t.charnum);
+                :}
+                ;
+
+false           ::= FALSE:f
+                {: RESULT = new FalseNode(f.linenum, f.charnum);
+                :}
+                ;
+
 id              ::= ID:i
                 {: RESULT = new IdNode(i.linenum, i.charnum, i.idVal);
                 :}
                 ;
-				
+
+dotAccess       ::= exp:e DOT id:i
+                {: RESULT = new DotAccessExpNode(e, i);
+                :}
+                ;
+
+assign          ::= exp:e1 ASSIGN exp:e2
+                {: RESULT = new AssignNode(e1, e2);
+                :}
+                ;				
+
 callExp         ::= id:i LPAREN expList:e RPAREN
                 {: ExpListNode eln = new ExpListNode(e);
                    RESULT = new CallExpNode(i, eln);
+                :}
+                ;
+
+unaryExp        ::= unaryMinus:u
+                {: RESULT = u;
+                :}
+                | not:n
+                {: RESULT = n;
+                :}
+                ;
+
+unaryMinus      ::= MINUS exp:e
+                {: RESULT = new UnaryMinusNode(e);
+                :}
+                ;
+
+not             ::= NOT exp:e
+                {: RESULT = new NotNode(e);
+                :}
+                ;
+
+binaryExp       ::= plus:p
+                {: RESULT = p;
+                :}
+                | minus:m
+                {: RESULT = m;
+                :}
+                | divide:d
+                {: RESULT = d;
+                :}
+                | times:t
+                {: RESULT = t;
+                :}
+                | and:a
+                {: RESULT = a;
+                :}
+                | or:o
+                {: RESULT = o;
+                :}
+                | equals:e
+                {: RESULT = e;
+                :}
+                | notequals:n
+                {: RESULT = n;
+                :}
+                | less:l
+                {: RESULT = l;
+                :}
+                | greater:g
+                {: RESULT = g;
+                :}
+                | lesseq:l
+                {: RESULT = l;
+                :}
+                | greatereq:g
+                {: RESULT = g;
+                :}
+                ;
+
+plus            ::= exp:e1 PLUS exp:e2
+                {: RESULT = new PlusNode(e1, e2);
+                :}
+                ;
+
+minus           ::= exp:e1 MINUS exp:e2
+                {: RESULT = new MinusNode(e1, e2);
+                :}
+                ;
+
+times           ::= exp:e1 TIMES exp:e2
+                {: RESULT = new TimesNode(e1, e2);
+                :}
+                ;
+
+divide          ::= exp:e1 DIVIDE exp:e2
+                {: RESULT = new DivideNode(e1, e2);
+                :}
+                ;
+
+and             ::= exp:e1 AND exp:e2
+                {: RESULT = new AndNode(e1, e2);
+                :}
+                ;
+
+or              ::= exp:e1 OR exp:e2
+                {: RESULT = new OrNode(e1, e2);
+                :}
+                ;
+
+equals          ::= exp:e1 EQUALS exp:e2
+                {: RESULT = new EqualsNode(e1, e2);
+                :}
+                ;
+
+notEquals       ::= exp:e1 NOTEQUALS exp:e2
+                {: RESULT = new NotEqualsNode(e1, e2);
+                :}
+                ;
+
+less            ::= exp:e1 LESS exp:e2
+                {: RESULT = new LessNode(e1, e2);
+                :}
+                ;
+
+greater         ::= exp:e1 GREATER exp:e2
+                {: RESULT = new GreaterNode(e1, e2);
+                :}
+                ;
+
+lesseq          ::= exp:e1 LESSEQ exp:e2
+                {: RESULT = new LessEqNode(e1, e2);
+                :}
+                ;
+
+greatereq       ::= exp:e1 GREATEREQ exp:e2
+                {: RESULT = new GreaterEqNode(e1, e2);
                 :}
                 ;
