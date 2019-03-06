@@ -28,8 +28,8 @@ public void syntax_error(Symbol currToken) {
 terminal                INT;
 terminal                BOOL;
 terminal                VOID;
-terminal                TRUE;
-terminal                FALSE;
+terminal TokenVal       TRUE;
+terminal TokenVal       FALSE;
 terminal                STRUCT;
 terminal                CIN;
 terminal                COUT;
@@ -118,15 +118,22 @@ non terminal DivideNode       divide;
 non terminal AndNode          and;
 non terminal OrNode           or;
 non terminal EqualsNode       equals;
-non terminal NotEqualsNode    notequals;
+non terminal NotEqualsNode    notEquals;
 non terminal LessNode         less;
 non terminal GreaterNode      greater;
 non terminal LessEqNode       lesseq;
 non terminal GreaterEqNode    greatereq;
  
  
-/* NOTE: Add precedence and associativity declarations here */
-
+/* precedence and associativity */
+precedence right    ASSIGN;
+precedence left     OR;
+precedence left     AND;
+precedence nonassoc EQUALS, NOTEQUALS, LESS, LESSEQ, GREATER, GREATEREQ;
+precedence left     PLUS, MINUS;
+precedence left     TIMES, DIVIDE;
+precedence left     DOT;
+precedence nonassoc MINUS, NOT;
 
 start with program;
 
@@ -356,7 +363,7 @@ exp             ::= id:i
                 {: RESULT = f;
                 :}
                 | dotAccess:d
-                {: RESULT = d
+                {: RESULT = d;
                 :}
                 | assign:a
                 {: RESULT = a;
@@ -378,7 +385,7 @@ intlit          ::= INTLITERAL:i
                 ;
 
 strlit          ::= STRINGLITERAL:s
-                {: RESULT = new StringLitNode(s.linenum, s.charnum, s.strVal)
+                {: RESULT = new StringLitNode(s.linenum, s.charnum, s.strVal);
                 :}
                 ;
 
@@ -452,7 +459,7 @@ binaryExp       ::= plus:p
                 | equals:e
                 {: RESULT = e;
                 :}
-                | notequals:n
+                | notEquals:n
                 {: RESULT = n;
                 :}
                 | less:l
