@@ -417,7 +417,7 @@ class PostIncStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         addIndent(p, indent);
         myExp.unparse(p, indent);
-        p.print("++;\n");
+        p.print("++;");
     }
 
     // 1 kid
@@ -432,7 +432,7 @@ class PostDecStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         addIndent(p, indent);
         myExp.unparse(p, indent);
-        p.print("--;\n");
+        p.print("--;");
     }
 
     // 1 kid
