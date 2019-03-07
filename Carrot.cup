@@ -23,7 +23,6 @@ public void syntax_error(Symbol currToken) {
 }
 :};
 
-
 /* Terminals (tokens returned by the scanner) */
 terminal                INT;
 terminal                BOOL;
@@ -85,7 +84,6 @@ non terminal FnBodyNode       fnBody;
 non terminal LinkedList       stmtList;
 non terminal LinkedList       expList;
 non terminal TypeNode         type;
-non terminal StructNode       struct;
 non terminal StmtNode         stmt;
 non terminal AssignStmtNode   assignStmt;
 non terminal PostIncStmtNode  postIncStmt;
@@ -133,7 +131,7 @@ precedence nonassoc EQUALS, NOTEQUALS, LESS, LESSEQ, GREATER, GREATEREQ;
 precedence left     PLUS, MINUS;
 precedence left     TIMES, DIVIDE;
 precedence left     DOT;
-precedence nonassoc MINUS, NOT;
+precedence nonassoc NOT;
 
 start with program;
 
@@ -238,10 +236,7 @@ type            ::= INT
                 :}
                 ;
 
-struct          ::= STRUCT id:i
-                {: RESULT = new StructNode(i);
-                :}
-                ;
+
 
 stmt            ::= assignStmt:as
                 {: RESULT = as;
